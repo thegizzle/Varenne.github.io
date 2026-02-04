@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Varenne - Février 2026</title>
+    <style>
+        :root {
+            /* Palette inspirée du logo Varenne */
+            --primary-brown: #6b3e26;
+            --accent-orange: #d97736;
+            --accent-teal: #2f7a75;
+            --bg-cream: #f9f5f0;
+            --text-dark: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border-top: 10px solid var(--accent-orange);
+            position: relative;
+        }
+
+        /* Bouton Admin (Cadenas) */
+        .admin-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+        .admin-toggle:hover { opacity: 1; }
+        .admin-active { color: var(--accent-orange); opacity: 1; }
+
+        /* HEADER & LOGO */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-brown);
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background-color: var(--primary-brown);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Si vous voulez mettre votre propre image, décommentez le code HTML plus bas */
+        .custom-logo-img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--accent-teal);
+            margin-top: 5px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section Infos Importantes */
+        .info-box {
+            background-color: #f0f8f8;
+            border-left: 5px solid var(--accent-teal);
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            flex: 1;
+            min-width: 250px;
+            margin: 10px;
+        }
+
+        .info-item h3 {
+            color: var(--primary-brown);
+            margin-top: 0;
+            font-size: 1.1em;
+            text-transform: uppercase;
+        }
+
+        /* Le Tableau Modifiable */
+        .schedule-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: var(--primary-brown);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Styles spécifiques au mode édition */
+        .editable-active {
+            cursor: text;
+            background-color: #fff;
+        }
+        .editable-active:hover { background-color: #fff8e1; }
+        .editable-active:focus { outline: 2px solid var(--accent-orange); }
+
+        /* Éléments cachés si pas admin */
+        .admin-only { display: none; }
+        
+        /* Boutons d'action */
+        .actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-add {
+            background-color: var(--accent-teal);
+            color: white;
+        }
+
+        .btn-print {
+            background-color: var(--primary-brown);
+            color: white;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            width: 30px;
+        }
+
+        /* Nouveau style pour l'image du présentoir */
+        .display-stand-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .display-stand-img {
+            max-width: 180px; /* Taille ajustable */
+            height: auto;
+            border-radius: 4px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); /* Ombre portée pour le réalisme */
+            transition: transform 0.2s; /* Animation douce */
+        }
+
+        /* Style pour le lien et le texte d'indication */
+        .display-stand-container a {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .display-stand-container a:hover .display-stand-img {
+            transform: scale(1.05); /* Effet de zoom au survol */
+        }
+
+        .click-hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: var(--accent-teal);
+            font-weight: bold;
+        }
+
+        .img-placeholder {
+            display: none; /* Caché par défaut */
+            border: 2px dashed #d97736;
+            padding: 20px;
+            color: #d97736;
+            background: #fff8e1;
+            margin: 10px auto;
+            max-width: 300px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        /* Impression */
+        @media print {
+            body { background-color: white; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
+            .actions, .delete-header, .delete-cell, .admin-toggle, #edit-notice, .img-placeholder { display: none !important; }
+            td:focus { outline: none; }
+            .logo-container { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            /* Cacher le texte d'indication à l'impression si souhaité */
+            .click-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Bouton Admin -->
+        <button id="adminBtn" class="admin-toggle" onclick="toggleAdminMode()" title="Mode Administrateur">🔒</button>
+
+        <header>
+            <img src="logo.png" alt="Logo Varenne" class="custom-logo-img" onerror="this.style.display='none'; document.getElementById('logo-error').style.display='block';">
+            <!-- Message de secours si le logo ne charge pas -->
+            <div id="logo-error" class="img-placeholder">
+                <strong>Logo manquant</strong><br>
+                Assurez-vous que le fichier <em>logo.png</em> est dans le même dossier.
+            </div>
+
+            <h2 id="monthTitle" class="editable-content">Février 2026</h2>
+        </header>
+
+        <div class="info-box">
+            <div class="info-item">
+                <h3>📅 Évènement du mois</h3>
+                <p id="info1" class="editable-content"><strong>Assemblée de Circonscription</strong><br>15 Février</p>
+            </div>
+            <div class="info-item">
+                <h3>📍 Foyer Secondaire</h3>
+                <p id="info2" class="editable-content"><strong>Famille Ngalle</strong><br>21, avenue Marechal Foch, NLD</p>
+            </div>
+        </div>
+
+        <div class="schedule-container">
+            <table id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th width="15%">Dates</th>
+                        <th width="50%">Heures et Lieux</th>
+                        <th width="30%">Responsables</th>
+                        <th class="delete-header admin-only" width="5%"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Les données seront insérées ici par Javascript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Image du présentoir ajoutée sous le tableau -->
+        <div class="display-stand-container">
+            <a href="https://maps.app.goo.gl/7i1tEaDm3xN5KPHfA" target="_blank" title="Voir l'adresse sur Google Maps">
+                <img src="pre.jpg" alt="Présentoir" class="display-stand-img" onerror="this.style.display='none'; document.getElementById('stand-error').style.display='block';">
+                <span class="click-hint">📍 Cliquez pour voir le plan</span>
+            </a>
+            <!-- Message de secours si l'image ne charge pas -->
+            <div id="stand-error" class="img-placeholder">
+                <strong>Image manquante (pre.jpg)</strong><br>
+                1. Enregistrez votre image sous le nom <code>pre.jpg</code><br>
+                2. Placez-la dans le même dossier que ce fichier HTML.
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-add admin-only" onclick="addRow()">+ Ajouter une ligne</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Imprimer / PDF</button>
+        </div>
+        
+        <p id="edit-notice" class="admin-only" style="font-size: 0.8em; color: #d97736; text-align: center; margin-top: 30px;">
+            🔓 MODE ADMIN ACTIVÉ : Cliquez sur le texte pour modifier.
+        </p>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const ADMIN_PASSWORD = "123"; // CHANGEZ LE MOT DE PASSE ICI
+        // ---------------------
+
+        let isAdmin = false;
+
+        const initialData = [
+            { date: "07/02", lieu: "10h – F. Picard", resp: "Matthieu" },
+            { date: "14/02", lieu: "10h – F. Picard", resp: "Matthieu" },
+            { date: "21/02", lieu: "10h – F. Picard", resp: "Jesse" },
+            { date: "28/02", lieu: "10h – F. Picard", resp: "Matthieu" }
+        ];
+
+        function loadData() {
+            const storedData = localStorage.getItem('varenneSchedule');
+            return storedData ? JSON.parse(storedData) : initialData;
+        }
+
+        function saveData() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const data = [];
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if(cells.length > 0) {
+                    data.push({
+                        date: cells[0].innerText,
+                        lieu: cells[1].innerText,
+                        resp: cells[2].innerText
+                    });
+                }
+            });
+            localStorage.setItem('varenneSchedule', JSON.stringify(data));
+            
+            // Sauvegarder aussi les infos du haut
+            localStorage.setItem('varenneInfo1', document.getElementById('info1').innerHTML);
+            localStorage.setItem('varenneInfo2', document.getElementById('info2').innerHTML);
+            // Sauvegarder le titre du mois
+            localStorage.setItem('varenneMonthTitle', document.getElementById('monthTitle').innerText);
+        }
+
+        function loadInfo() {
+            if(localStorage.getItem('varenneInfo1')) {
+                document.getElementById('info1').innerHTML = localStorage.getItem('varenneInfo1');
+                document.getElementById('info2').innerHTML = localStorage.getItem('varenneInfo2');
+            }
+            if(localStorage.getItem('varenneMonthTitle')) {
+                document.getElementById('monthTitle').innerText = localStorage.getItem('varenneMonthTitle');
+            }
+        }
+
+        function renderTable() {
+            const data = loadData();
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            data.forEach((row) => createRow(row.date, row.lieu, row.resp));
+            applyAdminView(); 
+        }
+
+        function createRow(date, lieu, resp) {
+            const tbody = document.getElementById('tableBody');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="editable-cell" oninput="saveData()">${date}</td>
+                <td class="editable-cell" oninput="saveData()">${lieu}</td>
+                <td class="editable-cell" oninput="saveData()">${resp}</td>
+                <td class="delete-cell admin-only" style="text-align:center;">
+                    <span class="delete-btn" onclick="deleteRow(this)">×</span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function addRow() {
+            createRow("Date", "Heure - Lieu", "Responsable");
+            saveData();
+            applyAdminView();
+        }
+
+        function deleteRow(btn) {
+            if(confirm('Supprimer cette ligne ?')) {
+                const row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                saveData();
+            }
+        }
+
+        // --- GESTION DU MODE ADMIN ---
+
+        function toggleAdminMode() {
+            if (!isAdmin) {
+                const password = prompt("Entrez le mot de passe administrateur :");
+                if (password === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    // Pas d'alerte intrusive
+                    applyAdminView();
+                } else if (password !== null) {
+                    alert("Mot de passe incorrect ❌");
+                }
+            } else {
+                isAdmin = false;
+                applyAdminView();
+            }
+        }
+
+        function applyAdminView() {
+            const adminBtn = document.getElementById('adminBtn');
+            const adminElements = document.querySelectorAll('.admin-only');
+            const editableCells = document.querySelectorAll('.editable-cell, .editable-content');
+
+            if (isAdmin) {
+                adminBtn.textContent = "🔓";
+                adminBtn.classList.add('admin-active');
+                
+                adminElements.forEach(el => el.style.display = 'table-cell'); 
+                document.querySelectorAll('div.actions .admin-only, p.admin-only').forEach(el => el.style.display = 'block');
+
+                editableCells.forEach(cell => {
+                    cell.setAttribute('contenteditable', 'true');
+                    cell.classList.add('editable-active');
+                });
+            } else {
+                adminBtn.textContent = "🔒";
+                adminBtn.classList.remove('admin-active');
+                
+                adminElements.forEach(el => el.style.display = 'none');
+
+                editableCells.forEach(cell => {
+                    cell.setAttribute('contenteditable', 'false');
+                    cell.classList.remove('editable-active');
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInfo();
+            renderTable();
+            document.getElementById('info1').addEventListener('input', saveData);
+            document.getElementById('info2').addEventListener('input', saveData);
+            document.getElementById('monthTitle').addEventListener('input', saveData);
+        });
+    </script>
+</body>
+</html>
